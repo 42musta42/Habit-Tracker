@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Habit Tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f5f6fa;--tx:#0f172a;--mu:#64748b;--ac:#6366f1;--ac2:#4f46e5;--bd:#e9ebf3;--ok:#10b981;--bad:#ef4444;--sh:0 1px 2px rgba(15,23,42,.04),0 8px 24px -12px rgba(15,23,42,.1)}
+html[dir=rtl]{--d:rtl}html[dir=ltr]{--d:ltr}
+*{box-sizing:border-box;margin:0;padding:0}[hidden]{display:none!important}
+body{font-family:'Inter','Cairo',system-ui,sans-serif;background:var(--bg);color:var(--tx);line-height:1.6;min-height:100vh}
+button,input{font:inherit;color:inherit}button{cursor:pointer;border:0;background:none}
+.tb{position:sticky;top:0;z-index:50;display:flex;justify-content:space-between;align-items:center;gap:8px;padding:12px 20px;background:rgba(245,246,250,.85);backdrop-filter:blur(12px);border-bottom:1px solid var(--bd);direction:ltr}
+.tb>div{display:flex;gap:8px;align-items:center;direction:var(--d)}
+.pill{padding:8px 14px;border-radius:12px;background:#fff;border:1px solid var(--bd);font-weight:600;font-size:.88rem;transition:.2s}.pill:hover{border-color:var(--ac);color:var(--ac)}
+.pri{background:var(--ac);color:#fff;border-radius:12px;padding:10px 18px;font-weight:700;font-size:.9rem;box-shadow:0 6px 16px -6px rgba(99,102,241,.6);transition:.2s}.pri:hover{background:var(--ac2);transform:translateY(-1px)}
+.ghost{color:var(--mu);margin-top:16px;font-weight:600}
+main{max-width:1120px;margin:0 auto;padding:28px 20px 60px}
+h1{font-size:1.7rem;font-weight:800;letter-spacing:-.02em}h2{font-size:1.05rem;font-weight:700;margin-bottom:14px}.sub{color:var(--mu);font-size:.95rem}
+@keyframes up{from{opacity:0;transform:translateY(14px)}}
+.wrap{max-width:640px;margin:20px auto;background:#fff;border-radius:28px;padding:36px;box-shadow:var(--sh);border:1px solid var(--bd);text-align:center;animation:up .4s}
+.bar{height:6px;background:var(--bd);border-radius:9px;margin-bottom:28px;overflow:hidden}.bar i{display:block;height:100%;background:var(--ac);border-radius:9px;transition:.4s}
+.ogrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin:24px 0}
+.opt{display:flex;align-items:center;gap:10px;padding:14px;border:1.5px solid var(--bd);border-radius:14px;background:#fff;font-weight:600;text-align:start;transition:.2s}.opt:hover{border-color:var(--ac);background:#eef2ff;transform:translateY(-2px)}.opt span{font-size:1.4rem}
+.or{color:var(--mu);font-size:.85rem;margin:6px 0 10px;font-weight:600}.row{display:flex;gap:8px}.row input{flex:1;min-width:0;padding:12px 14px;border:1.5px solid var(--bd);border-radius:12px;outline:0}.row input:focus{border-color:var(--ac)}
+.hgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;margin-top:24px}
+.hcard{position:relative;display:flex;align-items:center;gap:14px;padding:20px;background:#fff;border:1px solid var(--bd);border-radius:20px;cursor:pointer;box-shadow:var(--sh);transition:.2s;font-weight:700}.hcard:hover{transform:translateY(-3px);border-color:var(--ac)}.hcard.add{border-style:dashed;color:var(--ac)}.hcard .hi{font-size:1.8rem}
+.x{position:absolute;top:6px;inset-inline-end:6px;opacity:.45;padding:6px}.x:hover{opacity:1}
+.hd{display:flex;align-items:center;gap:14px;margin-bottom:24px}.hd .hi{width:56px;height:56px;border-radius:18px;background:#eef2ff;display:grid;place-items:center;font-size:1.9rem}
+.g{display:grid;grid-template-columns:repeat(12,1fr);gap:20px}.card{background:#fff;border:1px solid var(--bd);border-radius:20px;padding:24px;box-shadow:var(--sh)}
+.c4{grid-column:span 4}.c6{grid-column:span 6}.c8{grid-column:span 8}.c12{grid-column:span 12}@media(max-width:900px){.c4,.c6,.c8{grid-column:span 12}}
+.timer{font-size:3rem;font-weight:800;direction:ltr;text-align:center;font-variant-numeric:tabular-nums;color:var(--ac);letter-spacing:-.02em}
+.pt{text-align:center;color:var(--mu);font-weight:600;font-size:.88rem;margin:6px 0 8px}.pb{height:10px;background:var(--bd);border-radius:9px;overflow:hidden}.pb i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--ac),#a5b4fc);border-radius:9px;transition:width 1s}
+.hud{display:flex;flex-direction:column;gap:8px;margin:18px 0}.hb{padding:12px 14px;border-radius:14px;font-size:.9rem;font-weight:600;display:flex;gap:10px}.b1{background:#eff6ff;color:#1e40af}.b2{background:#fefce8;color:#854d0e}.b3{background:#fef2f2;color:#991b1b;display:none;animation:pl 2s infinite}
+@keyframes pl{0%{box-shadow:0 0 0 0 rgba(239,68,68,.35)}70%{box-shadow:0 0 0 10px transparent}100%{box-shadow:0 0 0 0 transparent}}
+.slip{width:100%;display:flex;align-items:center;gap:14px;padding:16px 18px;border-radius:18px;color:#fff;text-align:start;background:linear-gradient(135deg,#fb7185,#e11d48);box-shadow:0 12px 24px -10px rgba(225,29,72,.6),inset 0 1px 0 rgba(255,255,255,.3);transition:.2s}.slip:hover{transform:translateY(-2px);box-shadow:0 16px 28px -10px rgba(225,29,72,.7)}.slip:active{transform:scale(.98)}.slip b{display:block;font-size:1.1rem}.slip small{opacity:.88;font-size:.8rem}
+.ic{width:44px;height:44px;border-radius:14px;background:rgba(255,255,255,.22);display:grid;place-items:center;font-size:1.3rem;flex:none}
+.rw{margin-top:18px}.rh{display:flex;justify-content:space-between;font-size:.9rem;font-weight:600;margin-bottom:6px}.rt{height:30px;background:#f1f3f9;border-radius:15px;direction:ltr}.rf{height:100%;border-radius:15px;position:relative;transition:width 1s linear}
+.rf.p{background:linear-gradient(90deg,#f59e0b,#fcd34d)}.rf.a{background:linear-gradient(90deg,#64748b,#cbd5e1)}.rf.c{background:linear-gradient(90deg,var(--ac),#a5b4fc)}.rf u{position:absolute;right:-14px;top:0;font-size:1.5rem;text-decoration:none;transform:scaleX(-1)}
+.sg{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px}.sb{padding:16px 18px;border-radius:16px;background:#f8f9fc;border-inline-start:4px solid var(--ac)}.sb h4{font-size:.82rem;color:var(--mu);font-weight:600}.sb p{font-size:1.2rem;font-weight:800}.sb.w{grid-column:1/-1;background:#fff1f2;border-color:var(--bad)}.sb.w p{color:#9f1239}.pat{font-size:.88rem;color:#be123c;font-weight:600;margin-top:8px}
+.bg{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:16px;text-align:center}.bc{transition:.3s}.bc:hover{transform:translateY(-4px)}.bi{width:68px;height:68px;border-radius:50%;margin:0 auto 8px;display:grid;place-items:center;font-size:2rem;border:3px solid rgba(255,255,255,.8);box-shadow:inset 0 -4px 10px rgba(0,0,0,.18),0 6px 12px -4px rgba(0,0,0,.2)}.bc b{font-size:.85rem;display:block}
+.bs{font-size:.75rem;font-weight:700;padding:4px 8px;border-radius:20px;display:inline-block;margin-top:4px;background:#d1fae5;color:#059669}.bc.lk .bi{background:#cbd5e1!important;filter:grayscale(1);box-shadow:none}.bc.lk .bs{background:#f1f3f9;color:var(--mu)}
+.k0{background:radial-gradient(circle at 30% 30%,#fbbf24,#b45309)}.k1{background:radial-gradient(circle at 30% 30%,#f1f5f9,#94a3b8)}.k2{background:radial-gradient(circle at 30% 30%,#fef08a,#ca8a04)}.k3{background:radial-gradient(circle at 30% 30%,#e0e7ff,#4338ca)}.k4{background:radial-gradient(circle at 30% 30%,#cffafe,#0891b2)}
+.hc{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;font-weight:700;color:var(--ac)}.nav{width:36px;height:36px;border-radius:10px;background:#f1f3f9;font-size:1.3rem;line-height:1}.nav:disabled{opacity:.4;cursor:not-allowed}html[dir=rtl] .nav{transform:scaleX(-1)}
+.lg{display:flex;gap:16px;justify-content:center;font-size:.82rem;color:var(--mu);font-weight:600;margin-bottom:14px;flex-wrap:wrap}.lg i{display:inline-block;width:10px;height:10px;border-radius:3px;background:#e2e8f0;margin-inline-end:6px}.lg i.ok{background:var(--ok)}.lg i.bad{background:var(--bad)}
+.hm{display:grid;grid-template-columns:repeat(10,1fr);gap:8px}.hd2{aspect-ratio:1;border-radius:10px;position:relative;font-weight:700;font-size:.9rem;background:#f1f3f9;color:var(--mu);border:1px dashed var(--bd);transition:.2s}.hd2:hover{transform:scale(1.1);z-index:2}.hd2.clean{background:var(--ok);color:#fff;border:0}.hd2.relapse{background:var(--bad);color:#fff;border:0}
+.cn{position:absolute;top:-5px;inset-inline-start:-5px;background:#0f172a;color:#fff;font-size:.65rem;padding:2px 6px;border-radius:10px;line-height:1.2}
+.tg{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}.tip{padding:18px;border-radius:16px;background:#f8f9fc;border-inline-start:4px solid var(--ac)}.tip h4{color:var(--ac);margin-bottom:6px}.tip p{color:var(--mu);font-size:.9rem}
+.tw{overflow-x:auto}table{width:100%;border-collapse:collapse;min-width:560px}th,td{padding:14px;text-align:start;border-bottom:1px solid var(--bd);font-size:.9rem}th{color:var(--mu);font-weight:600;background:#f8f9fc}.up,.dn{padding:4px 10px;border-radius:8px;font-weight:700;font-size:.82rem}.up{background:#d1fae5;color:#059669}.dn{background:#fee2e2;color:#dc2626}
+summary{font-weight:700;font-size:1.05rem;cursor:pointer;list-style:none;display:flex;justify-content:space-between}summary::-webkit-details-marker{display:none}summary::after{content:'⌄';color:var(--mu);transition:.2s}details[open] summary::after{transform:rotate(180deg)}details[open] summary{margin-bottom:14px}
+.md{position:fixed;inset:0;background:rgba(15,23,42,.55);backdrop-filter:blur(4px);display:none;place-items:center;z-index:100;padding:16px}.md.on{display:grid}
+.mc{background:#fff;border-radius:24px;padding:28px;max-width:400px;width:100%;text-align:center;box-shadow:0 24px 48px -12px rgba(0,0,0,.3);animation:up .25s}.mc h3{font-size:1.25rem;margin-bottom:10px}.mc p{color:var(--mu);font-weight:500}
+.ma{display:flex;gap:10px;margin-top:22px}.mbtn{flex:1;padding:12px;border-radius:12px;font-weight:700;background:#f1f3f9}.mbtn.d{background:var(--bad);color:#fff}.mbtn.p{background:var(--ac);color:#fff}
+.chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:14px}.chips span{padding:8px 14px;border-radius:12px;background:#fef2f2;color:#b91c1c;font-weight:700}
+</style>
+</head>
+<body>
+<div class="tb">
+ <div><button class="pill" id="bLang"></button><button class="pill" id="bMine" hidden></button><button class="pill" id="bDel" hidden></button></div>
+ <div><button class="pri" id="bNew" hidden></button></div>
+</div>
+<main><section id="picker" hidden></section><section id="onb" class="wrap" hidden></section><section id="dash" hidden></section></main>
+<div class="md" id="md" onclick="event.target==this&&this.classList.remove('on')"><div class="mc"><h3 id="mt"></h3><div id="mb"></div><div class="ma" id="ma"></div></div></div>
+<script src="translations.js"></script>
+<script>
+const store=window.api||{get:k=>localStorage.getItem(k),set:(k,v)=>localStorage.setItem(k,v)};
+const KEY='habitsV2',D=864e5,H=36e5,M=6e4,BD=[3,7,14,30,90],BI=['🛡️','⚔️','🏆','👑','💎'];
+const HL=[['social','📱'],['smoking','🚬'],['vaping','💨'],['fastfood','🍔'],['sugar','🍬'],['caffeine','☕'],['latenight','🦉'],['procrastination','⏳'],['nails','💅'],['gaming','🎮'],['shopping','🛍️'],['phone','📲']];
+let S,cur=null,tm=null,cyc=0,ob={},obStep=1,view='',gw=-1,lastBd='';
+const q=s=>document.querySelector(s),save=()=>store.set(KEY,JSON.stringify(S));
+const T=(k,v)=>{let s=(TRANSLATIONS[S.lang]||{})[k]??TRANSLATIONS.en[k]??k;if(v)for(const x in v)s=s.replaceAll('{'+x+'}',v[x]);return s};
+const loc=()=>S.lang=='ar'?'ar-EG':'en-US',C=()=>S.habits.find(h=>h.id==cur),hn=h=>h.key?T('h.'+h.key):h.name,st=h=>h.recs.length?h.recs[h.recs.length-1].end:h.created;
+const fmtDur=ms=>{if(!ms)return T('none');const d=Math.floor(ms/D),h=Math.floor(ms%D/H),m=Math.floor(ms%H/M),p=[];if(d)p.push(T('nd',{n:d}));if(h)p.push(T('nh',{n:h}));if(m)p.push(T('nm',{n:m}));return p.length?p.join(T('and')):T('lt1')};
+const fmtDT=ms=>new Date(ms).toLocaleDateString(loc(),{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
+const mc=()=>Math.floor((Date.now()-C().start)/(30*D));
+
+function load(){try{S=JSON.parse(store.get(KEY))}catch(e){}
+ if(!S){S={lang:'ar',habits:[]};
+  try{const o=localStorage.getItem('selectedHabit');if(o){const r=JSON.parse(localStorage.getItem('ultimateTrackerV10')||'[]'),s=new Date(2026,8,22).getTime();S.habits.push({id:1,key:'',name:o,icon:'✨',freq:localStorage.getItem('habitFrequency')||'',start:s,created:r.length?r[0].start:s,recs:r})}}catch(e){}
+  save()}}
+function labels(){document.documentElement.lang=S.lang;document.documentElement.dir=S.lang=='ar'?'rtl':'ltr';document.title=T('title');
+ q('#bLang').textContent='🌐 '+T('langBtn');q('#bMine').textContent='▦ '+T('myH');q('#bDel').textContent='🗑 '+T('del');q('#bNew').textContent='＋ '+T('newHabit')}
+function go(v){view=v;['picker','onb','dash'].forEach(i=>q('#'+i).hidden=i!=v);q('#bNew').hidden=v=='onb'||!S.habits.length;q('#bMine').hidden=v!='dash';q('#bDel').hidden=v!='dash';clearInterval(tm);scrollTo(0,0)}
+function modal(t,b,acts){q('#mt').textContent=t;q('#mb').innerHTML=b;q('#ma').innerHTML='';acts.forEach(([l,c,f])=>{const e=document.createElement('button');e.className='mbtn '+c;e.textContent=l;e.onclick=()=>{q('#md').classList.remove('on');f&&f()};q('#ma').append(e)});q('#md').classList.add('on')}
+
+/* ---- habit picker ---- */
+function picker(){go('picker');q('#picker').innerHTML=`<h1>${T('pickT')}</h1><p class="sub">${T('pickS')}</p><div class="hgrid">`+S.habits.map(h=>`<div class="hcard" onclick="open_(${h.id})"><span class="hi">${h.icon}</span>${hn(h)}<button class="x" onclick="event.stopPropagation();askDel(${h.id})" aria-label="${T('del')}">🗑</button></div>`).join('')+`<div class="hcard add" onclick="onb1()"><span class="hi">＋</span>${T('newHabit')}</div></div>`}
+function askDel(id){modal(T('dT'),`<p>${T('dP')}</p>`,[[T('cancel'),''],[T('del'),'d',()=>{S.habits=S.habits.filter(x=>x.id!=id);save();S.habits.length?picker():onb1()}]])}
+
+/* ---- onboarding ---- */
+function onb1(){ob={};step(1)}
+function step(n){go('onb');obStep=n;let h=`<div class="bar"><i style="width:${n*33.4}%"></i></div>`;
+ if(n==1)h+=`<h1>${T('o1')}</h1><p class="sub">${T('o1s')}</p><div class="ogrid">${HL.map(([k,i])=>`<button class="opt" onclick="pick1('${k}','${i}')"><span>${i}</span>${T('h.'+k)}</button>`).join('')}</div><div class="or">${T('oOther')}</div><div class="row"><input id="cu" maxlength="40" placeholder="${T('oPh')}" onkeydown="event.key=='Enter'&&pick1('','✨')"><button class="pri" onclick="pick1('','✨')">${T('oGo')}</button></div>`+(S.habits.length?`<button class="ghost" onclick="picker()">${T('cancel')}</button>`:'');
+ else if(n==2)h+=`<h1>${T('o2')}</h1><div class="ogrid">${[1,2,3,4,5,6].map(i=>`<button class="opt" onclick="pick2(${i})">${T('f'+i)}</button>`).join('')}</div>`;
+ else h+=`<h1 style="color:var(--ac);font-size:2rem;margin:20px 0">${T('o3a')}</h1><h2 style="font-size:1.4rem;margin-bottom:30px">${T('o3b')}</h2><button class="pri" style="width:100%;padding:16px;font-size:1.1rem" onclick="finish()">${T('oStart')}</button>`;
+ q('#onb').innerHTML=h}
+function pick1(k,i){if(!k){const v=q('#cu').value.trim();if(!v){q('#cu').focus();return}ob.name=v}ob.key=k;ob.icon=i;step(2)}
+function pick2(i){ob.freq=i;step(3)}
+function finish(){const n=new Date();n.setHours(0,0,0,0);const h={id:Date.now(),key:ob.key||'',name:ob.name||'',icon:ob.icon,freq:ob.freq,start:n.getTime(),created:Date.now(),recs:[]};S.habits.push(h);save();open_(h.id)}
+
+/* ---- dashboard ---- */
+function open_(id){cur=id;cyc=mc();drawDash();tm=setInterval(tick,1000)}
+function drawDash(){const h=C();go('dash');lastBd='';
+ q('#dash').innerHTML=`<div class="hd"><span class="hi">${h.icon}</span><div><h1>${hn(h)}</h1><p class="sub">${T('since',{d:new Date(h.start).toLocaleDateString(loc(),{day:'numeric',month:'long',year:'numeric'})})}</p></div></div><div class="g">
+<section class="card c4"><h2>⏱️ ${T('tTimer')}</h2><div id="lt" class="timer"></div><div class="pt" id="pt"></div><div class="pb"><i id="pf"></i></div>
+<div class="hud"><div class="hb b1">🎯 <span id="h1"></span></div><div class="hb b2">⏳ <span id="h2"></span></div><div class="hb b3" id="h3">⚠️ <span>${T('red')}</span></div></div>
+<button class="slip" onclick="askSlip()"><span class="ic">✋</span><span><b>${T('btn')}</b><small id="bs"></small></span></button></section>
+<section class="card c8"><h2>🏁 ${T('tRace')}</h2><p class="sub">${T('raceS')}</p>${[['p','👑','g1'],['a','📉','g2'],['c','🚀','g3']].map(([k,i,l])=>`<div class="rw"><div class="rh"><span>${i} ${T(l)}</span><b id="r${k}t"></b></div><div class="rt"><div class="rf ${k}" id="r${k}"><u>${k=='c'?'🏎️':'👻'}</u></div></div></div>`).join('')}</section>
+<section class="card c12"><h2>🧠 ${T('tRep')}</h2><div class="sg" id="rep"></div></section>
+<section class="card c6"><h2>🏅 ${T('tBad')}</h2><div class="bg" id="bd"></div></section>
+<section class="card c6"><h2>📅 ${T('tHeat')}</h2><div class="hc"><button class="nav" id="pv" onclick="cy(-1)">‹</button><span id="ht"></span><button class="nav" id="nx" onclick="cy(1)">›</button></div><div class="lg"><span><i class="ok"></i>${T('clean')}</span><span><i class="bad"></i>${T('slip')}</span><span><i></i>${T('future')}</span></div><div class="hm" id="hm"></div></section>
+<details class="card c12"><summary>🛡️ ${T('tTips')}</summary><div class="tg">${[1,2,3].map(i=>`<div class="tip"><h4>${T('tp'+i)}</h4><p>${T('tq'+i)}</p></div>`).join('')}</div></details>
+<details class="card c12"><summary>📜 ${T('tLog')}</summary><div class="tw"><table><thead><tr>${[1,2,3,4].map(i=>`<th>${T('th'+i)}</th>`).join('')}</tr></thead><tbody id="tb"></tbody></table></div></details></div>`;
+ report();heat();table();tick()}
+
+function tick(){const h=C();if(!h||view!='dash')return;const now=Date.now(),df=now-st(h),p=n=>String(n).padStart(2,0),du=h.recs.map(r=>r.duration),mx=du.length?Math.max(...du):0,avg=du.length?du.reduce((a,b)=>a+b,0)/du.length:0;
+ q('#lt').textContent=[Math.floor(df/D),Math.floor(df%D/H),Math.floor(df%H/M),Math.floor(df%M/1e3)].map(p).join(':');
+ const ld=df/D;let cd=0,nb=BD[0];for(let i=0;i<BD.length;i++){if(ld>=BD[i]){cd=BD[i];nb=BD[i+1]??null}else{nb=BD[i];break}}
+ if(nb){const pc=Math.min(100,Math.max(0,(ld-cd)/(nb-cd)*100));q('#pf').style.width=pc+'%';q('#pt').textContent=T('prog',{b:T('b'+(BD.indexOf(nb)+1)),p:pc.toFixed(2)})}else{q('#pf').style.width='100%';q('#pt').textContent=T('progAll')}
+ q('#bs').textContent=T('btnSub',{x:fmtDur(df)});
+ q('#h1').innerHTML=mx&&df>mx?`<b>${T('hNew')}</b>`:mx?T('hRec',{x:`<b>${fmtDur(mx-df)}</b>`}):T('hFirst');
+ if(df<D){const n=Math.ceil(df/H)||1;q('#h2').innerHTML=T('hMh',{x:`<b>${fmtDur(n*H-df)}</b>`,n})}else{const n=Math.ceil(df/D);q('#h2').innerHTML=T('hMd',{x:`<b>${fmtDur(n*D-df)}</b>`,n})}
+ q('#h3').style.display=gw>=0&&new Date(now).getHours()==gw?'flex':'none';
+ const sc=Math.max(mx,avg,df,1)*1.05;[['p',mx],['a',avg],['c',df]].forEach(([k,v])=>{q('#r'+k).style.width=Math.min(v/sc*100,100)+'%';q('#r'+k+'t').textContent=fmtDur(v)});
+ const all=[...du,df],html=BD.map((d,i)=>{const n=all.filter(x=>x>=d*D).length,ok=n>0,rem=d*D-df;return `<div class="bc ${ok?'':'lk'}"><div class="bi k${i}">${BI[i]}</div><b>${T('b'+(i+1))}</b><div class="bs">${ok?(n>1?T('bOkN',{n}):T('bOk')):(rem<H?T('bSoon'):T('bLeft',{x:fmtDur(rem)}))}</div></div>`}).join('');
+ if(html!=lastBd){q('#bd').innerHTML=html;lastBd=html}}
+
+function report(){const h=C(),r=h.recs,now=Date.now(),du=r.map(x=>x.duration),live=now-st(h);let mx='—',mn='—',wt='—',nr='—',pt=T('rNone');gw=-1;
+ if(r.length){const hc={},dc=Array(7).fill(0);r.forEach(x=>{const d=new Date(x.end);hc[d.getHours()]=(hc[d.getHours()]||0)+1;dc[d.getDay()]++});
+  mx=fmtDur(Math.max(...du,live));mn=fmtDur(Math.min(...du));gw=+Object.keys(hc).reduce((a,b)=>hc[a]>hc[b]?a:b);
+  wt=T('rWV',{h:new Date(2000,0,1,gw).toLocaleTimeString(loc(),{hour:'numeric'})});
+  const m=Math.max(...dc),wd=dc.indexOf(m),avg=du.reduce((a,b)=>a+b,0)/r.length,hist=Math.max(...du),na=st(h)+avg,nm=st(h)+hist;
+  pt=T('rPat',{p:Math.round(m/r.length*100),d:new Date(2024,0,7+wd).toLocaleDateString(loc(),{weekday:'long'})})+' ';
+  if(now>nm&&hist>0){nr=`<span style="color:var(--ok)">${T('rUnk')}</span>`;pt+=T('rp1')}
+  else if(now>na){nr=`<small style="display:block;color:var(--ok)">🏆 ${T('rBeat')}</small><span style="color:#d97706">${T('rNm',{d:fmtDT(nm)})}</span>`;pt+=T('rp2')}
+  else{nr=fmtDT(na);pt+=T('rp3')}}
+ q('#rep').innerHTML=[['rTot',T('rTotV',{n:r.length}),'#ef4444'],['rMax',mx,'#10b981'],['rMin',mn,'#f59e0b'],['rWorst',wt,'#8b5cf6']].map(([k,v,c])=>`<div class="sb" style="border-color:${c}"><h4>${T(k)}</h4><p>${v}</p></div>`).join('')+`<div class="sb w"><h4>${T('rNext')}</h4><p>${nr}</p><div class="pat">🧠 ${pt}</div></div>`}
+
+function table(){const r=C().recs;q('#tb').innerHTML=r.length?[...r].reverse().map((x,i)=>{const oi=r.length-1-i,pv=oi?r[oi-1]:null;let s=`<span class="sub">${T('base')}</span>`;if(pv)s=x.duration>pv.duration?`<span class="up">▲ +${fmtDur(x.duration-pv.duration)}</span>`:`<span class="dn">▼ -${fmtDur(pv.duration-x.duration)}</span>`;
+ return `<tr><td>${fmtDT(x.start)}</td><td>${fmtDT(x.end)}</td><td><b>${fmtDur(x.duration)}</b></td><td>${s}</td></tr>`}).join(''):`<tr><td colspan="4" class="sub">${T('empty')}</td></tr>`}
+
+/* ---- heatmap (same logic as before) + day details ---- */
+function cy(s){cyc=Math.min(Math.max(cyc+s,0),mc());heat()}
+function heat(){const h=C(),today=new Date().setHours(0,0,0,0),cs=new Date(h.start);cs.setDate(cs.getDate()+cyc*30);const ce=new Date(cs);ce.setDate(ce.getDate()+29);const f=d=>d.toLocaleDateString(loc(),{day:'numeric',month:'short'});
+ q('#ht').textContent=T('hFT',{a:f(cs),b:f(ce)});q('#pv').disabled=cyc<=0;q('#nx').disabled=cyc>=mc();
+ q('#hm').innerHTML=Array.from({length:30},(_,i)=>{const d=new Date(cs);d.setDate(cs.getDate()+i);const t=d.getTime(),e=new Date(d).setHours(23,59,59,999);let c='',b='',ti=d.toLocaleDateString(loc(),{weekday:'long',month:'long',day:'numeric'});
+  if(t>today)ti+=' '+T('hNY');else{const n=h.recs.filter(r=>r.end>=t&&r.end<=e).length;if(n){c='relapse';b=`<span class="cn">${n}</span>`}else c='clean'}
+  return `<button class="hd2 ${c}" title="${ti}" onclick="dayInfo(${t})">${d.getDate()}${b}</button>`}).join('')}
+function dayInfo(t){const e=new Date(t).setHours(23,59,59,999),ts=C().recs.filter(r=>r.end>=t&&r.end<=e).map(r=>r.end),ttl=new Date(t).toLocaleDateString(loc(),{weekday:'long',day:'numeric',month:'long'});let b;
+ if(t>new Date().setHours(0,0,0,0))b=`<p>${T('dFut')}</p>`;else if(!ts.length)b=`<p>${T('dNone')}</p>`;
+ else b=`<p>${T('dTimes',{n:ts.length})}</p><div class="chips">${ts.map(x=>`<span>🕐 ${new Date(x).toLocaleTimeString(loc(),{hour:'numeric',minute:'2-digit'})}</span>`).join('')}</div>`;
+ modal(ttl,b,[[T('close'),'p']])}
+
+/* ---- slip ---- */
+function askSlip(){modal(T('wT'),`<p>${T('wP')}</p>`,[[T('wNo'),'p'],[T('wYes'),'d',slip]])}
+function slip(){const h=C(),n=Date.now();h.recs.push({start:st(h),end:n,duration:n-st(h)});save();cyc=mc();report();heat();table();tick()}
+
+/* ---- boot ---- */
+q('#bLang').onclick=()=>{S.lang=S.lang=='ar'?'en':'ar';save();labels();if(view=='picker')picker();else if(view=='onb')step(obStep);else if(view=='dash'){drawDash();tm=setInterval(tick,1000)}};
+q('#bMine').onclick=picker;q('#bDel').onclick=()=>askDel(cur);q('#bNew').onclick=onb1;
+load();labels();S.habits.length?picker():onb1();
+</script>
+</body>
+</html>
