@@ -145,7 +145,7 @@ function table(){const r=C().recs;q('#tb').innerHTML=r.length?[...r].reverse().m
 function cy(s){cyc=Math.min(Math.max(cyc+s,0),mc());heat()}
 function heat(){const h=C(),today=new Date().setHours(0,0,0,0),cs=new Date(h.start);cs.setDate(cs.getDate()+cyc*30);const ce=new Date(cs);ce.setDate(ce.getDate()+29);const f=d=>d.toLocaleDateString(loc(),{day:'numeric',month:'short'});
  q('#ht').textContent=T('hFT',{a:f(cs),b:f(ce)});q('#pv').disabled=cyc<=0;q('#nx').disabled=cyc>=mc();
- q('#hm').innerHTML=Array.from({length:30},(_,i)=>{const d=new Date(cs);d.setDate(cs.getDate()+i);const t=d.getTime(),e=new Date(d).setHours(23,59,59,999);let c='',b='',ti=d.toLocaleDateString(loc(),{weekday:'long',month:'long',day:'numeric'});
+ q('#hm').innerHTML=Array.from({length:30},(_,i)=>{const d=new Date(cs);d.setDate(cs.getDate()+i);d.setHours(0,0,0,0);const t=d.getTime(),e=new Date(d).setHours(23,59,59,999);let c='',b='',ti=d.toLocaleDateString(loc(),{weekday:'long',month:'long',day:'numeric'});
   if(t>today)ti+=' '+T('hNY');else{const n=h.recs.filter(r=>r.end>=t&&r.end<=e).length;if(n){c='relapse';b=`<span class="cn">${n}</span>`}else c='clean'}
   return `<button class="hd2 ${c}" title="${ti}" onclick="dayInfo(${t})">${d.getDate()}${b}</button>`}).join('')}
 function dayInfo(t){const e=new Date(t).setHours(23,59,59,999),ts=C().recs.filter(r=>r.end>=t&&r.end<=e).map(r=>r.end),ttl=new Date(t).toLocaleDateString(loc(),{weekday:'long',day:'numeric',month:'long'});let b;
